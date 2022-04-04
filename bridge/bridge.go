@@ -104,25 +104,8 @@ func (b *Bridge) Sync(quiet bool) {
 
 	log.Printf("Syncing services on %d containers", len(containers))
 
-	// NOTE: This assumes reregistering will do the right thing, i.e. nothing..
 	for _, listing := range containers {
-		services := b.services[listing.ID]
-		if services == nil {
-			b.add(listing.ID, quiet)
-		} else {
-			for _, service := range services {
-				//log.Println("Bridge service: ", service)
-				getstatus := b.registry.QueryConsul(service)
-				if getstatus != nil {
-					//	log.Println("getstatus failed:", service, err)
-					continue
-				}
-				err := b.registry.Register(service)
-				if err != nil {
-					log.Println("sync register failed:", service, err)
-				}
-			}
-		}
+		b.add(listing.ID, quiet)
 	}
 
 	// Clean up services that were registered previously, but aren't
