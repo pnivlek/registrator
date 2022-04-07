@@ -105,7 +105,14 @@ func (b *Bridge) Sync(quiet bool) {
 	log.Printf("Syncing services on %d containers", len(containers))
 
 	for _, listing := range containers {
-		b.add(listing.ID, quiet)
+		services := b.services[listing.ID]
+		if services == nil {
+			b.add(listing.ID, quiet)
+		} else {
+			for _, service := range services {
+				b.registry.QueryConsul(service)
+			}
+		}
 	}
 
 	// Clean up services that were registered previously, but aren't
@@ -422,7 +429,7 @@ func (b *Bridge) shouldRemove(containerId string) bool {
 func (b *Bridge) markContainerAsDying(containerId string) {
 	// cleanup after CleanupDyingTtl
 	for containerId, t := range b.dyingContainers {
-		if time.Since(t) >= time.Millisecond * time.Duration(b.config.CleanupDyingTtl) {
+		if time.Since(t) >= time.Millisecond*time.Duration(b.config.CleanupDyingTtl) {
 			delete(b.dyingContainers, containerId)
 		}
 	}
