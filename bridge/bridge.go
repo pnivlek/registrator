@@ -126,7 +126,7 @@ func (b *Bridge) Sync(quiet bool) {
 			log.Println("error listing nonExitedContainers, skipping sync", err)
 			return
 		}
-		for listingId, _ := range b.services {
+		for listingId := range b.services {
 			found := false
 			for _, container := range nonExitedContainers {
 				if listingId == container.ID {
@@ -205,7 +205,7 @@ func (b *Bridge) add(containerId string, quiet bool) {
 	ports := make(map[string]ServicePort)
 
 	// Extract configured host port mappings, relevant when using --net=host
-	for port, _ := range container.Config.ExposedPorts {
+	for port := range container.Config.ExposedPorts {
 		published := []dockerapi.PortBinding{{"0.0.0.0", port.Port()}}
 		ports[string(port)] = servicePort(container, port, published)
 	}
@@ -271,7 +271,7 @@ func (b *Bridge) newService(port ServicePort, isgroup bool) *Service {
 		port.HostIP = b.config.HostIp
 	}
 
-	metadata, metadataFromPort := serviceMetaData(container.Config, port.ExposedPort)
+	metadata, metadataFromPort := serviceMetaData(container.Config, port.ExposedPort, b.config.ServicePrefix)
 
 	ignore := mapDefault(metadata, "ignore", "")
 	if ignore != "" {

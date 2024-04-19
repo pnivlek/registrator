@@ -15,7 +15,7 @@ FROM alpine:3.13
 
 COPY docker-entrypoint.sh /bin/docker-entrypoint.sh
 
-RUN \ 
+RUN \
 	chmod +x /bin/docker-entrypoint.sh
 ENV STOP_TIMEOUT 1200000
 STOPSIGNAL SIGQUIT

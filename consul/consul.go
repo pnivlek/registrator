@@ -81,7 +81,6 @@ func (r *ConsulAdapter) Ping() error {
 }
 
 func (r *ConsulAdapter) Register(service *bridge.Service) error {
-
 	registration := new(consulapi.AgentServiceRegistration)
 	registration.ID = service.ID
 	registration.Name = service.Name
@@ -100,12 +99,12 @@ func (r *ConsulAdapter) QueryConsul(service *bridge.Service) error {
 	for _, i := range serviceDetails {
 		for _, j := range ServiceHealthCheck {
 
-			//log.Println("A: ", i.Service, "B: ", j, "OShostname: ", OShostname)
+			// log.Println("A: ", i.Service, "B: ", j, "OShostname: ", OShostname)
 
 			servicetags := strings.Join(j.ServiceTags, " ")
 			consul_containerid := strings.Split(servicetags, "container_id=")[1][:12]
 			if (i.Service.ID == j.ServiceID) && (OShostname == j.Node) && (service.ContainerID == consul_containerid) {
-				//log.Println("Processing for: ", i.Service.Service, " - ", i.Service.ID, "- ", service.ContainerID)
+				// log.Println("Processing for: ", i.Service.Service, " - ", i.Service.ID, "- ", service.ContainerID)
 				metrics := &influxdb.Metrics{
 					ServiceName:   i.Service.Service,
 					ContainerID:   consul_containerid,

@@ -55,7 +55,8 @@ func combineTags(tagParts ...string) []string {
 	return tags
 }
 
-func serviceMetaData(config *dockerapi.Config, port string) (map[string]string, map[string]bool) {
+func serviceMetaData(config *dockerapi.Config, port string, prefix string) (map[string]string, map[string]bool) {
+	servicePrefix := prefix + "SERVICE_"
 	meta := config.Env
 	for k, v := range config.Labels {
 		meta = append(meta, k+"="+v)
@@ -64,8 +65,8 @@ func serviceMetaData(config *dockerapi.Config, port string) (map[string]string, 
 	metadataFromPort := make(map[string]bool)
 	for _, kv := range meta {
 		kvp := strings.SplitN(kv, "=", 2)
-		if strings.HasPrefix(kvp[0], "SERVICE_") && len(kvp) > 1 {
-			key := strings.ToLower(strings.TrimPrefix(kvp[0], "SERVICE_"))
+		if strings.HasPrefix(kvp[0], servicePrefix) && len(kvp) > 1 {
+			key := strings.ToLower(strings.TrimPrefix(kvp[0], servicePrefix))
 			if metadataFromPort[key] {
 				continue
 			}
@@ -95,9 +96,9 @@ func servicePort(container *dockerapi.Container, port dockerapi.Port, published 
 		hip = "0.0.0.0"
 	}
 
-	//for overlay networks
-	//detect if container use overlay network, than set HostIP into NetworkSettings.Network[string].IPAddress
-	//better to use registrator with -internal flag
+	// for overlay networks
+	// detect if container use overlay network, than set HostIP into NetworkSettings.Network[string].IPAddress
+	// better to use registrator with -internal flag
 	nm = container.HostConfig.NetworkMode
 	if nm != "bridge" && nm != "default" && nm != "host" {
 		hip = container.NetworkSettings.Networks[nm].IPAddress

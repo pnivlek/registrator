@@ -37,7 +37,6 @@ func New() InfluxDBClient {
 }
 
 func (c *InfluxDBClient) WriteData(metrics *Metrics) {
-
 	client := c.client
 	defer client.Close()
 	// Use blocking write client for writes to desired bucket

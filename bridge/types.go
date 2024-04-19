@@ -31,6 +31,7 @@ type Config struct {
 	DeregisterCheck string
 	Cleanup         bool
 	CleanupDyingTtl int
+	ServicePrefix   string
 }
 
 type Service struct {
